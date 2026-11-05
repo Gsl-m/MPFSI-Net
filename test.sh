@@ -1,0 +1,26 @@
+#!/bin/sh
+PARTITION=Segmentation
+
+GPU_ID=1
+dataset=pascal # pascal coco fss
+exp_name=split3
+
+arch=BAM23
+net=resnet50 # vgg resnet50
+
+exp_dir=exp/${dataset}/${arch}/${exp_name}/${net} 
+snapshot_dir=${exp_dir}/snapshot
+result_dir=${exp_dir}/result
+config=config/${dataset}/${dataset}_split0_${net}.yaml
+#config=config/${dataset}/${dataset}_${exp_name}_${net}.yaml
+mkdir -p ${snapshot_dir} ${result_dir}
+now=$(date +"%Y%m%d_%H%M%S")
+cp test.sh test.py ${config} ${exp_dir}
+
+echo ${arch}
+echo ${config}
+
+CUDA_VISIBLE_DEVICES=${GPU_ID} python3 -u test21.py \
+        --config=${config} \
+        --arch=${arch} \
+        2>&1 | tee ${result_dir}/test-$now.log
